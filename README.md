@@ -15,12 +15,21 @@ This project implements a fully autonomous robot lawn mower that can be controll
 - **Safety Features**: Automatic shutdown on connection loss or obstacles
 - **AI-Powered Navigation**: Uses Hailo AI HAT for efficient path planning
 
-## Project Structure
+## System Architecture
 
-- **raspberry_pi/**: Code that runs on the Raspberry Pi controller
-  - `mower_controller.py`: Main controller for the robot mower
-- **server/**: Server code for remote control and monitoring
-  - `server.py`: Web server for remote control interface
+This project uses a distributed architecture with two main components:
+
+- **Raspberry Pi Controller**: Runs directly on the robot mower
+  - Located in the `raspberry_pi/` directory
+  - `mower_controller.py`: Main controller that handles autonomous operation, sensors, motors, and camera
+  - Connects to the control server over WiFi/network
+  - Operates independently when connection is lost
+
+- **Ubuntu Control Server**: Runs on a separate Ubuntu server on the same network
+  - Located in the `server/` directory
+  - `server.py`: Web-based control panel for monitoring and manual control
+  - Provides real-time video streaming and telemetry
+  - Allows remote operation from any device with a web browser
 
 ## Hardware Requirements
 
@@ -35,9 +44,9 @@ This project implements a fully autonomous robot lawn mower that can be controll
 
 ## Software Setup
 
-### Raspberry Pi Setup
+### Raspberry Pi Setup (On the mower)
 
-1. Install the required Python packages:
+1. Install the required Python packages on the Raspberry Pi:
    ```
    pip install socketio opencv-python numpy picamera2 RPi.GPIO
    ```
@@ -48,20 +57,24 @@ This project implements a fully autonomous robot lawn mower that can be controll
    ```
    Add before the exit line:
    ```
-   python3 /path/to/mower_controller.py --server http://your-server-ip:5000 &
+   python3 /path/to/raspberry_pi/mower_controller.py --server http://ubuntu-server-ip:5000 &
    ```
 
-### Server Setup
+3. Make sure the Raspberry Pi connects to the same network as your Ubuntu server
 
-1. Install the required packages:
+### Ubuntu Server Setup (Control panel)
+
+1. Install the required packages on your Ubuntu server:
    ```
    pip install flask flask-socketio eventlet opencv-python numpy
    ```
 
-2. Run the server:
+2. Run the control panel server:
    ```
-   python server.py
+   python server/server.py
    ```
+
+3. Access the control panel by navigating to `http://ubuntu-server-ip:5000` in your web browser
 
 ## Usage
 
